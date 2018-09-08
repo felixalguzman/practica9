@@ -1,0 +1,5 @@
+-- insert into NIVEL_ESCOLAR(nombre) values('Basico');
+-- insert into NIVEL_ESCOLAR(nombre) values('Medio');
+-- insert into NIVEL_ESCOLAR(nombre) values('Grado Universitario');
+-- insert into NIVEL_ESCOLAR(nombre) values('Postgrado');
+-- insert into NIVEL_ESCOLAR(nombre) values('Doctorado');
