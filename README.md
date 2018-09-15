@@ -20,7 +20,9 @@ registros.
 6. Debe existir una acción para modificar o borrar un registro antes del enviar al
 servidor.
 Algunas librerías que pueden implementar, son libres de usar cualquier otra:
-• ZangoDB
-• Dexie.js
-• Offline.js
-• Geolocator
+
+
+• [ZangoDB](https://erikolson186.github.io/zangodb/)
+• [Dexie.js](http://dexie.org/)
+• [Offline.js](http://github.hubspot.com/offline/docs/welcome/)
+• [Geolocator](http://onury.io/geolocator/)
