@@ -19,6 +19,13 @@
             src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
+
+
+
+    <link rel="stylesheet" href="../css/custom.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css" type="text/css">
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
+
 </head>
 
 <body class="is-preload">
@@ -35,7 +42,7 @@
     <!-- Menu -->
     <nav id="menu">
         <ul class="links">
-            <li><a href="index.html">Home</a></li>
+            <li><a href="/index">Home</a></li>
             <li><a href="landing.html">Landing</a></li>
             <li><a href="generic.html">Generic</a></li>
             <li><a href="elements.html">Elements</a></li>
@@ -80,7 +87,16 @@
                     </ul>
                 </form>
             </section>
+
+            
         </div>
+
+        <section>
+            <div class="container" align="center">
+                <div id="map" class="map"></div>
+            </div>
+
+        </section>
     </div>
 
 
@@ -112,37 +128,84 @@
             return false;
         });
 
+
     });
+
+    function gotPos(position){
+        //geolocalizacion.textContent = "(" + position.coords.latitude + ", "  + position.coords.longitude + ")";
+        // document.getElementById("geolocalizacion").value = "Ubicación Actual: (" + position.coords.latitude + ", "  + position.coords.longitude + ")";
+
+        console.log('-- ubicacion --', position);
+
+
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude]),
+                zoom: 15
+            }),
+
+        });
+
+        let marker = new ol.Feature({
+            geometry: new ol.geom.Point(
+                ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude])
+            )
+        });
+
+        let vectorSource = new ol.source.Vector({
+            features: [marker]
+        });
+
+
+        let markerVectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+        });
+        map.addLayer(markerVectorLayer);
+
+        document.querySelector('.map').scrollIntoView({
+            behavior: 'smooth'
+        });
+
+    }
+
+    function posFail(err){
+        //err is a number
+        let errors = {
+            1: 'No permission',
+            2: 'Unable to determine',
+            3: 'Took too long'
+        };
+        // document.querySelector('h1').textContent = errors[err];
+
+        console.log(errors[err]);
+    }
+
+
 
     function enviarFormulario() {
 
-        geolocator.config({
-            language:"es",
-            google: {
-                version: "3",
-                key: "AIzaSyDxlsKiRxzTvdqMQrKXgKjbYxK5VcYHjC0"
-            }
-        });
-
-        let options = {
+        let options ={
             enableHighAccuracy: true,
-            timeout: 5000,
-            maximumWait: 10000,     // max wait time for desired accuracy
-            maximumAge: 0,          // disable cache
-            desiredAccuracy: 30,    // meters
-            fallbackToIP: true,     // fallback to IP if Geolocation fails or rejected
-            addressLookup: true,    // requires Google API key if true
-            timezone: true,         // requires Google API key if true
-            map: "map-canvas",      // interactive map element id (or options object)
-            staticMap: true         // get a static map image URL (boolean or options object)
+            timeout: 3000,      //30 segundos
+            maximumAge: 36000   //1 hora
         };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(gotPos, posFail, options);
+        }
 
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar'
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
         });
 
-        let locate;
+        let locate = null;
         geolocator.locate(options, function (err, location) {
             if (err) return console.log(err);
             console.log(location);
@@ -152,7 +215,7 @@
            nombre: $('#nombre').val(),
             sector: $('#sector').val(),
             nivelEscolar: $('#nivelEscolar').val(),
-            // ubicacion: locate
+            ubicacion: locate
         });
 
         alert("Guardado");
@@ -177,6 +240,11 @@
 <script src="../js/util.js"></script>
 <script src="../js/main.js"></script>
 <script src="../js/offline.min.js"></script>
+<!--<script src="../js/geolocation.js"></script>-->
+
+<!--<script async defer-->
+        <!--src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw9Sw9Ab8Q2qb9KyS36CUUFB7qH_rls8s&callback=initMap">-->
+<!--</script>-->
 
 
 </body>

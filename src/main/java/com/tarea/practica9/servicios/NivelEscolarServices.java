@@ -24,4 +24,8 @@ public class NivelEscolarServices {
         nivelEscolarRepository.save(nivelEscolar);
         return nivelEscolar;
     }
+
+    public List<NivelEscolar> listaNivelEscolar(){
+        return  nivelEscolarRepository.findAll();
+    }
 }
