@@ -16,9 +16,7 @@
     </noscript>
 
     <script
-            src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-            crossorigin="anonymous"></script>
+            src="../js/jquery-3.3.1.min.js"></script>
 
 
 
@@ -42,7 +40,7 @@
     <!-- Menu -->
     <nav id="menu">
         <ul class="links">
-            <li><a href="/index">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="landing.html">Landing</a></li>
             <li><a href="generic.html">Generic</a></li>
             <li><a href="elements.html">Elements</a></li>
@@ -121,12 +119,15 @@
 
 <script>
 
+    let posicion = null;
     $( document ).ready(function() {
 
         $("#form").submit(function () {
             enviarFormulario();
             return false;
         });
+
+
 
 
     });
@@ -162,6 +163,7 @@
             features: [marker]
         });
 
+        posicion = [{latitude:position.coords.latitude, longitude: position.coords.longitude}];
 
         let markerVectorLayer = new ol.layer.Vector({
             source: vectorSource,
@@ -205,17 +207,12 @@
             encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
         });
 
-        let locate = null;
-        geolocator.locate(options, function (err, location) {
-            if (err) return console.log(err);
-            console.log(location);
-            locate = location;
-        });
+
         db.encuesta.add({
            nombre: $('#nombre').val(),
             sector: $('#sector').val(),
             nivelEscolar: $('#nivelEscolar').val(),
-            ubicacion: locate
+            ubicacion: posicion
         });
 
         alert("Guardado");
@@ -229,22 +226,19 @@
 
 
 <!-- Scripts -->
-<script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+<
 <!--<script src="../js/jquery.min.js"></script>-->
 <script src="../js/jquery.scrolly.min.js"></script>
 <script src="../js/geolocator.min.js"></script>
-<script src="../js/zangodb.min.js"></script>
+
+<script src="../js/dexie.js"></script>
 <script src="../js/jquery.scrollex.min.js"></script>
 <script src="../js/browser.min.js"></script>
 <script src="../js/breakpoints.min.js"></script>
 <script src="../js/util.js"></script>
 <script src="../js/main.js"></script>
 <script src="../js/offline.min.js"></script>
-<!--<script src="../js/geolocation.js"></script>-->
 
-<!--<script async defer-->
-        <!--src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw9Sw9Ab8Q2qb9KyS36CUUFB7qH_rls8s&callback=initMap">-->
-<!--</script>-->
 
 
 </body>
