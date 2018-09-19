@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
     <link rel="stylesheet" href="css/main.css"/>
     <noscript>
-        <link rel="stylesheet" href="css/noscript.css"/>
+        <link rel="stylesheet" href="../css/noscript.css"/>
     </noscript>
 
     <script
@@ -21,8 +21,12 @@
 
 
     <link rel="stylesheet" href="../css/custom.css">
+    <link rel="stylesheet" href="../css/offline-language-spanish.css">
+    <link rel="stylesheet" href="../css/offline-language-spanish-indicator.css">
+    <link rel="stylesheet" href="../css/offline-theme-slide-indicator.css">
     <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css" type="text/css">
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
+    <script src="../js/offline.min.js"></script>
 
 </head>
 
@@ -128,7 +132,30 @@
         });
 
 
+        let options ={
+            enableHighAccuracy: true,
+            timeout: 3000,      //30 segundos
+            maximumAge: 36000   //1 hora
+        };
 
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(gotPos, posFail, options);
+        }
+
+
+        let $online = $('.online'), $offline = $('.offline');
+
+        Offline.on('confirmed-down', function () {
+            $online.fadeOut(function () {
+                $offline.fadeIn();
+            });
+        });
+
+        Offline.on('confirmed-up', function () {
+            $offline.fadeOut(function () {
+                $online.fadeIn();
+            });
+        });
 
     });
 
@@ -139,40 +166,40 @@
         console.log('-- ubicacion --', position);
 
 
-        let map = new ol.Map({
-            target: 'map',
-            layers: [
-                new ol.layer.Tile({
-                    source: new ol.source.OSM()
-                }),
-            ],
-            view: new ol.View({
-                center: ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude]),
-                zoom: 15
-            }),
-
-        });
-
-        let marker = new ol.Feature({
-            geometry: new ol.geom.Point(
-                ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude])
-            )
-        });
-
-        let vectorSource = new ol.source.Vector({
-            features: [marker]
-        });
-
+        // let map = new ol.Map({
+        //     target: 'map',
+        //     layers: [
+        //         new ol.layer.Tile({
+        //             source: new ol.source.OSM()
+        //         }),
+        //     ],
+        //     view: new ol.View({
+        //         center: ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude]),
+        //         zoom: 15
+        //     }),
+        //
+        // });
+        //
+        // let marker = new ol.Feature({
+        //     geometry: new ol.geom.Point(
+        //         ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude])
+        //     )
+        // });
+        //
+        // let vectorSource = new ol.source.Vector({
+        //     features: [marker]
+        // });
+        //
         posicion = [{latitude:position.coords.latitude, longitude: position.coords.longitude}];
+        //
+        // let markerVectorLayer = new ol.layer.Vector({
+        //     source: vectorSource,
+        // });
+        // map.addLayer(markerVectorLayer);
 
-        let markerVectorLayer = new ol.layer.Vector({
-            source: vectorSource,
-        });
-        map.addLayer(markerVectorLayer);
-
-        document.querySelector('.map').scrollIntoView({
-            behavior: 'smooth'
-        });
+        // document.querySelector('.map').scrollIntoView({
+        //     behavior: 'smooth'
+        // });
 
     }
 
@@ -192,15 +219,7 @@
 
     function enviarFormulario() {
 
-        let options ={
-            enableHighAccuracy: true,
-            timeout: 3000,      //30 segundos
-            maximumAge: 36000   //1 hora
-        };
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(gotPos, posFail, options);
-        }
 
         let db = new Dexie("encuestas");
         db.version(1).stores({
@@ -226,7 +245,7 @@
 
 
 <!-- Scripts -->
-<
+
 <!--<script src="../js/jquery.min.js"></script>-->
 <script src="../js/jquery.scrolly.min.js"></script>
 <script src="../js/geolocator.min.js"></script>
@@ -237,7 +256,6 @@
 <script src="../js/breakpoints.min.js"></script>
 <script src="../js/util.js"></script>
 <script src="../js/main.js"></script>
-<script src="../js/offline.min.js"></script>
 
 
 
