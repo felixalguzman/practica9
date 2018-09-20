@@ -16,7 +16,8 @@ public interface NivelEscolarRepository extends JpaRepository<NivelEscolar, Long
 
 
 //    List<NivelEscolar> findAll();
-    
+
+    NivelEscolar findByNombre(String nombre);
 
     
 }

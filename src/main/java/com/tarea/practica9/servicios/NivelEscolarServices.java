@@ -28,4 +28,8 @@ public class NivelEscolarServices {
     public List<NivelEscolar> listaNivelEscolar(){
         return  nivelEscolarRepository.findAll();
     }
+
+    public NivelEscolar buscarNivelEscolarByNombre(String nombre){
+        return nivelEscolarRepository.findByNombre(nombre);
+    }
 }
