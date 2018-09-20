@@ -408,7 +408,7 @@
         });
 
 
-        console.log($('#nombreModificar').val());
+
         db.encuesta.update(parseInt(num), {
             nombre: $('#nombreModificar').val(),
             sector: $('#sectorModificar').val(),
@@ -416,9 +416,8 @@
         }).then(function (updated) {
 
             if (updated) {
-                alert('modificado');
-
                 mostrarEncuestas();
+                $('#modalEditar').modal('hide');
             } else
                 console.log("Nothing was updated - there were no friend with primary key: 2");
 
