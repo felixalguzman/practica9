@@ -177,6 +177,7 @@
                 </div>
                 <div class="modal-body editarFormulario">
                     <form id="formModificar">
+                        <input id="id" type="text" hidden>
                         <div class="field">
                             <label for="nombreModificar">Nombre</label>
                             <input type="text" name="nombre" required id="nombreModificar"/>
@@ -208,12 +209,17 @@
 
 <script>
 
-    let posicion = null, id=0;
+    let posicion = null, id = 0;
     $(document).ready(function () {
 
         $("#form").submit(function () {
             enviarFormulario();
             return false;
+        });
+
+
+        $('#modificar').on('click', function () {
+            modificarEncuesta();
         });
 
 
@@ -377,7 +383,16 @@
 
         id = parseInt(num);
         $('#formModificar')[0].reset();
-
+        let db = new Dexie("encuestas");
+        db.version(1).stores({
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
+        });
+        db.encuesta.get(parseInt(num), function (data) {
+            $('#nombreModificar').val(data.nombre);
+            $('#sectorModificar').val(data.sector);
+            $('#nivelEscolarModificar').val(data.nombre);
+            $('#id').val(id);
+        });
 
 
         $('#modalEditar').modal('show');
@@ -385,15 +400,31 @@
 
     }
 
-    function obtenerEncuesta(id) {
-        let num = id.replace('editar_', '');
+    function modificarEncuesta() {
+        let num = $('#id').val();
         let db = new Dexie("encuestas");
         db.version(1).stores({
             encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
         });
-        db.encuesta.get(parseInt(num), function (data) {
-            alert("Friend with id 1: " + data.nombre);
+
+
+        console.log($('#nombreModificar').val());
+        db.encuesta.update(parseInt(num), {
+            nombre: $('#nombreModificar').val(),
+            sector: $('#sectorModificar').val(),
+            nivelEscolar: $('#nivelEscolarModificar').val()
+        }).then(function (updated) {
+
+            if (updated) {
+                alert('modificado');
+
+                mostrarEncuestas();
+            } else
+                console.log("Nothing was updated - there were no friend with primary key: 2");
+
         });
+
+
     }
 
     function eliminar(id) {
@@ -433,6 +464,7 @@
                 }
 
             ],
+            searchable: false,
             buttons: [],
             language: {
                 search: "Buscar:",
