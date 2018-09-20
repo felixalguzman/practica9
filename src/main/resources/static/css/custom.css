@@ -15,3 +15,8 @@
 .letraFormulario{
     color: white;
 }
+
+.editarFormulario *{
+
+    color: gray;
+}
