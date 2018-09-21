@@ -443,7 +443,10 @@
             encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
         });
 
-        db.encuesta.delete(parseInt(num));
+        db.encuesta.update(parseInt(num), {
+            eliminado :true
+        });
+        // db.encuesta.delete(parseInt(num));
 
         mostrarEncuestas();
     }
@@ -502,7 +505,7 @@
 
             results.forEach(function (data) {
 
-                if (data.eliminado === true) {
+                if (data.eliminado === false) {
 
 
                     datos.push({
