@@ -60,13 +60,13 @@
     <nav id="menu">
         <ul class="links">
             <li><a href="/">Home</a></li>
-            <li><a href="landing.html">Landing</a></li>
-            <li><a href="generic.html">Generic</a></li>
-            <li><a href="elements.html">Elements</a></li>
+            <li><a href="/resultados">Resultados</a></li>
+            <!--<li><a href="generic.html">Generic</a></li>-->
+            <!--<li><a href="elements.html">Elements</a></li>-->
         </ul>
         <ul class="actions stacked">
-            <li><a href="#" class="button primary fit">Get Started</a></li>
-            <li><a href="#" class="button fit">Log In</a></li>
+            <!--<li><a href="#" class="button primary fit">Get Started</a></li>-->
+            <!--<li><a href="#" class="button fit">Log In</a></li>-->
         </ul>
     </nav>
 
@@ -209,25 +209,30 @@
 
 <script>
 
-    let posicion = null, id = 0;
+    let posicion = [], latitud, longitud;
     $(document).ready(function () {
-
-        $("#form").submit(function () {
-            enviarFormulario();
-            return false;
-        });
-
-
-        $('#modificar').on('click', function () {
-            modificarEncuesta();
-        });
-
 
         let options = {
             enableHighAccuracy: true,
             timeout: 3000,      //30 segundos
             maximumAge: 36000   //1 hora
         };
+
+
+        $("#form").submit(function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(gotPos, posFail, options);
+            }
+            enviarFormulario();
+            return false;
+
+
+        });
+
+
+        $('#modificar').on('click', function () {
+            modificarEncuesta();
+        });
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(gotPos, posFail, options);
@@ -293,6 +298,8 @@
         //     features: [marker]
         // });
         //
+        latitud = position.coords.latitude;
+        longitud = position.coords.longitude;
         posicion = [{latitude: position.coords.latitude, longitude: position.coords.longitude}];
         //
         // let markerVectorLayer = new ol.layer.Vector({
@@ -324,7 +331,7 @@
 
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+            encuesta: '++id,nombre,sector, nivelEscolar, latitud, longitud, eliminado'
         });
 
 
@@ -332,7 +339,8 @@
             nombre: $('#nombre').val(),
             sector: $('#sector').val(),
             nivelEscolar: $('#nivelEscolar').val(),
-            ubicacion: posicion,
+            latitud: latitud,
+            longitud: longitud,
             eliminado :false
         });
 
@@ -359,7 +367,8 @@
                         id: data.id,
                         nombre: data.nombre,
                         sector: data.sector,
-                        nivelEscolar: data.nivelEscolar
+                        nivelEscolar: data.nivelEscolar,
+
                     });
                 }
 
@@ -375,7 +384,7 @@
     async function buscarEncuestas() {
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+            encuesta: '++id,nombre,sector, nivelEscolar, latitud, longitud, eliminado'
         });
 
         return await  db.encuesta.toArray().catch(function (err) {
@@ -391,7 +400,7 @@
         $('#formModificar')[0].reset();
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+            encuesta: '++id,nombre,sector, nivelEscolar, latitud, longitud, eliminado'
         });
         db.encuesta.get(parseInt(num), function (data) {
             $('#nombreModificar').val(data.nombre);
@@ -410,7 +419,7 @@
         let num = $('#id').val();
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+            encuesta: '++id,nombre,sector, nivelEscolar, latitud, longitud, eliminado'
         });
 
 
@@ -440,7 +449,7 @@
 
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+            encuesta: '++id,nombre,sector, nivelEscolar, latitud, longitud, eliminado'
         });
 
         db.encuesta.update(parseInt(num), {
@@ -512,8 +521,9 @@
                         id: data.id,
                         nombre: data.nombre,
                         sector: data.sector,
-                        nivelEscolar: data.nivelEscolar
-                        // longitud:
+                        nivelEscolar: data.nivelEscolar,
+                        longitud: data.longitud,
+                        latitud: data.latitud
                     });
                 }
             });
@@ -527,7 +537,7 @@
 
                    let db = new Dexie("encuestas");
                    db.version(1).stores({
-                       encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+                       encuesta: '++id,nombre,sector, nivelEscolar, latitud, longitud, eliminado'
                    });
 
                    db.encuesta.toCollection().modify(function(encuesta) {

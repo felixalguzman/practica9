@@ -1,7 +1,6 @@
 package com.tarea.practica9.controller;
 
 import com.tarea.practica9.entidades.Encuesta;
-import com.tarea.practica9.repositorio.NivelEscolarRepository;
 import com.tarea.practica9.servicios.EncuestaServices;
 import com.tarea.practica9.servicios.NivelEscolarServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller() //indica que es un controlador.
 //@RequestMapping(path = "/thymeleaf")
@@ -44,10 +42,17 @@ public class RutasController {
         
     }
 
-    @RequestMapping("/resultados")
+    @RequestMapping(value = "/resultados", produces = {"application/json"})
     public String resultados(Model model){
-        model.addAttribute("encuestas", encuestaServices.obtenerEncuestas());
+//        model.addAttribute("encuestas", encuestaServices.obtenerEncuestas());
         return "/thymeleaf/resultados";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/encuestasServidor", produces = {"application/json"})
+    public List<Encuesta> encuestas(){
+//        model.addAttribute("encuestas", encuestaServices.obtenerEncuestas());
+        return encuestaServices.obtenerEncuestas();
     }
 
     @RequestMapping(value = "/sincronizar", method = RequestMethod.POST, consumes = "application/json")

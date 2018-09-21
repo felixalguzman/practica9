@@ -19,17 +19,17 @@ public class Encuesta {
     private String nombre;
     private String sector;
     private String nivelEscolar;
-    private String latitdud;
+    private String latitud;
     private String longitud;
 
     public Encuesta() {
     }
 
-    public Encuesta(String nombre, String sector, String nivelEscolar, String latitdud, String longitud) {
+    public Encuesta(String nombre, String sector, String nivelEscolar, String latitud, String longitud) {
         this.nombre = nombre;
         this.sector = sector;
         this.nivelEscolar = nivelEscolar;
-        this.latitdud = latitdud;
+        this.latitud = latitud;
         this.longitud = longitud;
     }
 
@@ -66,11 +66,11 @@ public class Encuesta {
     }
 
     public String getLatitdud() {
-        return latitdud;
+        return latitud;
     }
 
     public void setLatitdud(String latitdud) {
-        this.latitdud = latitdud;
+        this.latitud = latitdud;
     }
 
     public String getLongitud() {

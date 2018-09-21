@@ -17,11 +17,27 @@
 
     <script src="../js/jquery-3.3.1.min.js"></script>
 
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css"
+          type="text/css">
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
 
 
     <link rel="stylesheet" href="../css/custom.css">
     <script src="../js/offline.min.js"></script>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <script src="../bootstrap/js/bootstrap.js"></script>
 
+    <!--<link rel="stylesheet" type="text/css" href="../SemanticUI-2.2.13/semantic.min.css"/>-->
+    <link rel="stylesheet" type="text/css" href="../DataTables-1.10.18/css/dataTables.jqueryui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../Responsive-2.2.2/css/responsive.semanticui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../Select-1.2.6/css/select.semanticui.min.css"/>
+
+    <!--<script type="text/javascript" src="../SemanticUI-2.2.13/semantic.min.js"></script>-->
+    <script type="text/javascript" src="../DataTables-1.10.18/js/jquery.dataTables.min.js"></script>
+    <!--<script type="text/javascript" src="../DataTables-1.10.18/js/dataTables.semanticui.min.js"></script>-->
+    <script type="text/javascript" src="../Responsive-2.2.2/js/dataTables.responsive.min.js"></script>
+    <!--<script type="text/javascript" src="../Responsive-2.2.2/js/responsive.semanticui.min.js"></script>-->
+    <script type="text/javascript" src="../Select-1.2.6/js/dataTables.select.min.js"></script>
 
 
 </head>
@@ -41,13 +57,13 @@
     <nav id="menu">
         <ul class="links">
             <li><a href="/">Home</a></li>
-            <li><a href="landing.html">Landing</a></li>
-            <li><a href="generic.html">Generic</a></li>
-            <li><a href="elements.html">Elements</a></li>
+            <li><a href="/resultados">Resultados</a></li>
+            <!--<li><a href="generic.html">Generic</a></li>-->
+            <!--<li><a href="elements.html">Elements</a></li>-->
         </ul>
         <ul class="actions stacked">
-            <li><a href="#" class="button primary fit">Get Started</a></li>
-            <li><a href="#" class="button fit">Log In</a></li>
+            <!--<li><a href="#" class="button primary fit">Get Started</a></li>-->
+            <!--<li><a href="#" class="button fit">Log In</a></li>-->
         </ul>
     </nav>
 
@@ -56,10 +72,49 @@
     <div id="main">
 
 
-
         <section>
-            <div class="container" align="center">
-                <div id="map" class="map"></div>
+
+            <br>
+            <br>
+            <br>
+            <br>
+
+            <section>
+                <div class="container" align="center">
+                    <div id="map" class="map"></div>
+                </div>
+
+            </section>
+
+            <div class="inner">
+
+                <h3 class="letraFormulario">Resultados del servidor</h3>
+                <section class="style2" id="app">
+                    <table id="tabla" class="display" style="width:100%">
+
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Sector</th>
+                            <th>Nivel Escolar</th>
+                            <!--<th>Acciones</th>-->
+
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Sector</th>
+                            <th>Nivel Escolar</th>
+
+                        </tr>
+                        </tfoot>
+                    </table>
+
+
+                </section>
+
+
             </div>
 
         </section>
@@ -92,85 +147,110 @@
     let tabla;
     $(document).ready(function () {
 
+        let options = {
+            enableHighAccuracy: true,
+            timeout: 3000,      //30 segundos
+            maximumAge: 36000   //1 hora
+        };
 
-        let $online = $('.online'), $offline = $('.offline');
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(mostrarEncuestas, posFail, options);
+        }
 
-        Offline.on('confirmed-down', function () {
-            $online.fadeOut(function () {
-                $offline.fadeIn();
-            });
-        });
-
-        Offline.on('confirmed-up', function () {
-            $offline.fadeOut(function () {
-                $online.fadeIn();
-            });
-        });
-
-        mostrarEncuestas();
+        actualizarTabla();
 
     });
 
+    function posFail(err) {
+        //err is a number
 
-    function mostrarEncuestas() {
+        let errors = {
+            1: 'No permission',
+            2: 'Unable to determine',
+            3: 'Took too long'
+        };
+        // document.querySelector('h1').textContent = errors[err];
 
-        let json = [];
-        let encuestras = buscarEncuestas().then(function (results) {
-            console.log(results);
-
-            results.forEach( function (data) {
-
-                json.push({
-                    nombre: data.nombre,
-                    sector: data.sector,
-                    nivelEscolar: data.nivelEscolar
-                });
-            });
-
-            console.log(json);
-            actualizarTabla(json);
-        });
-
-
+        // console.log(errors[err]);
     }
 
-    async function buscarEncuestas() {
-        let db = new Dexie("encuestas");
-        db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
-        });
+    function mostrarEncuestas(position) {
 
-        return await  db.encuesta.toArray().catch(function (err) {
-            console.log(err);
-        });
-    }
-
-    function actualizarTabla(nuevo) {
-
-        let tabla = $('#tabla').DataTable({
-            destroy: true,
-            dom: 'Bfrtip',
-            data: nuevo,
-            columns: [
-                {data: 'nombre'},
-                {data: 'sector'},
-                {data: 'nivelEscolar'},
-
+        let map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
             ],
-            buttons :[],
-            language: {
-                search: "Buscar:",
-                paginate: {
-                    previous: "Anterior",
-                    next: "Siguiente"
-                },
-                emptyTable:     "No hay datos disponibles",
-                info:           "Mostrando del _START_ al _END_ de _TOTAL_ registros",
-            },
+            view: new ol.View({
+                center: ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude]),
+                zoom: 15
+            }),
 
         });
 
-        tabla.columns.adjust().draw();
+        let marker = new ol.Feature({
+            geometry: new ol.geom.Point(
+                ol.proj.fromLonLat([position.coords.longitude, position.coords.latitude])
+            )
+        });
+
+        let vectorSource = new ol.source.Vector({
+            features: [marker]
+        });
+        //
+        // posicion = [{latitude: position.coords.latitude, longitude: position.coords.longitude}];
+        //
+        let markerVectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+        });
+        map.addLayer(markerVectorLayer);
+
+        document.querySelector('.map').scrollIntoView({
+            behavior: 'smooth'
+        });
+
+    }
+
+
+
+    function actualizarTabla() {
+
+
+
+        $.ajax({
+            url: '/encuestasServidor',
+            success: function (response) {
+                let tabla = $('#tabla').DataTable({
+                    destroy: true,
+                    dom: 'Bfrtip',
+                    data: response,
+                    columns: [
+                        {data: 'nombre'},
+                        {data: 'sector'},
+                        {data: 'nivelEscolar'},
+
+                    ],
+                    buttons :[],
+                    language: {
+                        search: "Buscar:",
+                        paginate: {
+                            previous: "Anterior",
+                            next: "Siguiente"
+                        },
+                        emptyTable:     "No hay datos disponibles",
+                        info:           "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                    },
+
+                });
+                tabla.columns.adjust().draw();
+            }
+        });
+
+
+
+
 
 
     }
@@ -187,6 +267,7 @@
 <!--<script src="../js/jquery.min.js"></script>-->
 <script src="../js/jquery.scrolly.min.js"></script>
 <script src="../js/dexie.js"></script>
+<script src="../js/geolocator.min.js"></script>
 <script src="../js/jquery.scrollex.min.js"></script>
 <script src="../js/browser.min.js"></script>
 <script src="../js/breakpoints.min.js"></script>
