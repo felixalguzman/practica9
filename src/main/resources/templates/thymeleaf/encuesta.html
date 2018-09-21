@@ -266,7 +266,7 @@
         //geolocalizacion.textContent = "(" + position.coords.latitude + ", "  + position.coords.longitude + ")";
         // document.getElementById("geolocalizacion").value = "Ubicación Actual: (" + position.coords.latitude + ", "  + position.coords.longitude + ")";
 
-        console.log('-- ubicacion --', position);
+        // console.log('-- ubicacion --', position);
 
 
         // let map = new ol.Map({
@@ -308,6 +308,7 @@
 
     function posFail(err) {
         //err is a number
+
         let errors = {
             1: 'No permission',
             2: 'Unable to determine',
@@ -315,7 +316,7 @@
         };
         // document.querySelector('h1').textContent = errors[err];
 
-        console.log(errors[err]);
+        // console.log(errors[err]);
     }
 
 
@@ -323,7 +324,7 @@
 
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
         });
 
 
@@ -331,7 +332,8 @@
             nombre: $('#nombre').val(),
             sector: $('#sector').val(),
             nivelEscolar: $('#nivelEscolar').val(),
-            ubicacion: posicion
+            ubicacion: posicion,
+            eliminado :false
         });
 
         alert("Guardado");
@@ -347,19 +349,23 @@
 
         let json = [];
         let encuestras = buscarEncuestas().then(function (results) {
-            console.log(results);
+            // console.log(results);
 
             results.forEach(function (data) {
 
-                json.push({
-                    id: data.id,
-                    nombre: data.nombre,
-                    sector: data.sector,
-                    nivelEscolar: data.nivelEscolar
-                });
+                if (data.eliminado === false){
+
+                    json.push({
+                        id: data.id,
+                        nombre: data.nombre,
+                        sector: data.sector,
+                        nivelEscolar: data.nivelEscolar
+                    });
+                }
+
             });
 
-            console.log(json);
+            // console.log(json);
             actualizarTabla(json);
         });
 
@@ -369,7 +375,7 @@
     async function buscarEncuestas() {
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
         });
 
         return await  db.encuesta.toArray().catch(function (err) {
@@ -385,7 +391,7 @@
         $('#formModificar')[0].reset();
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
         });
         db.encuesta.get(parseInt(num), function (data) {
             $('#nombreModificar').val(data.nombre);
@@ -404,7 +410,7 @@
         let num = $('#id').val();
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
         });
 
 
@@ -434,7 +440,7 @@
 
         let db = new Dexie("encuestas");
         db.version(1).stores({
-            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion'
+            encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
         });
 
         db.encuesta.delete(parseInt(num));
@@ -496,18 +502,41 @@
 
             results.forEach(function (data) {
 
-                datos.push({
-                    id: data.id,
-                    nombre: data.nombre,
-                    sector: data.sector,
-                    nivelEscolar: [{
-                        nombre: data.nivelEscolar
-                    }],
-                    // longitud:
-                });
+                if (data.eliminado === true) {
+
+
+                    datos.push({
+                        id: data.id,
+                        nombre: data.nombre,
+                        sector: data.sector,
+                        nivelEscolar: data.nivelEscolar
+                        // longitud:
+                    });
+                }
             });
 
-            // console.log(json);
+           $.ajax({
+               type: 'POST',
+               data: JSON.stringify(datos),
+               contentType: "application/json",
+               url: '/sincronizar',
+               success: function (response) {
+
+                   let db = new Dexie("encuestas");
+                   db.version(1).stores({
+                       encuesta: '++id,nombre,sector, nivelEscolar, ubicacion, eliminado'
+                   });
+
+                   db.encuesta.toCollection().modify(function(encuesta) {
+                      encuesta.eliminado = true;
+                   });
+
+                   mostrarEncuestas();
+
+               }
+
+           })
+
 
         });
     }

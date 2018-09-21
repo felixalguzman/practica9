@@ -18,14 +18,14 @@ public class Encuesta {
 
     private String nombre;
     private String sector;
-    private NivelEscolar nivelEscolar;
+    private String nivelEscolar;
     private String latitdud;
     private String longitud;
 
     public Encuesta() {
     }
 
-    public Encuesta(String nombre, String sector, NivelEscolar nivelEscolar, String latitdud, String longitud) {
+    public Encuesta(String nombre, String sector, String nivelEscolar, String latitdud, String longitud) {
         this.nombre = nombre;
         this.sector = sector;
         this.nivelEscolar = nivelEscolar;
@@ -57,11 +57,11 @@ public class Encuesta {
         this.sector = sector;
     }
 
-    public NivelEscolar getNivelEscolar() {
+    public String getNivelEscolar() {
         return nivelEscolar;
     }
 
-    public void setNivelEscolar(NivelEscolar nivelEscolar) {
+    public void setNivelEscolar(String nivelEscolar) {
         this.nivelEscolar = nivelEscolar;
     }
 

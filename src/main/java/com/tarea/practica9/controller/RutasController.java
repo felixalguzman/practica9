@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller() //indica que es un controlador.
 //@RequestMapping(path = "/thymeleaf")
@@ -49,7 +50,7 @@ public class RutasController {
         return "/thymeleaf/resultados";
     }
 
-    @RequestMapping(value = "/sincronizar", method = RequestMethod.POST)
+    @RequestMapping(value = "/sincronizar", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<List<Encuesta>> sincronizar(@RequestBody List<Encuesta> encuestaList){
 
         for (Encuesta encuesta: encuestaList) {
