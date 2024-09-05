@@ -29,7 +29,7 @@ public class RutasController {
     public String index(Model model) {
 
         model.addAttribute("titulo", "Oficina de Planeamiento");
-        return "/thymeleaf/index";
+        return "thymeleaf/index";
         
     }
 
