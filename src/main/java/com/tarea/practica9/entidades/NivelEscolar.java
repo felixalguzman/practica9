@@ -2,10 +2,10 @@ package com.tarea.practica9.entidades;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 /**
  * NivelEscolar
@@ -17,28 +17,22 @@ public class NivelEscolar implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 
-    private String nombre;
+	private String nombre;
 
-	public long getId()
-	{
+	public long getId() {
 		return this.id;
 	}
 
-	public void setId(long id)
-	{
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public String getNombre()
-	{
+	public String getNombre() {
 		return this.nombre;
 	}
 
-	public void setNombre(String nombre)
-	{
+	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
 
-
-    
 }
