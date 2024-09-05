@@ -38,14 +38,14 @@ public class RutasController {
 
         model.addAttribute("niveles",nivelEscolarServices.listaNivelEscolar());
 
-        return "/thymeleaf/encuesta";
+        return "thymeleaf/encuesta";
         
     }
 
     @RequestMapping(value = "/resultados", produces = {"application/json"})
     public String resultados(Model model){
 //        model.addAttribute("encuestas", encuestaServices.obtenerEncuestas());
-        return "/thymeleaf/resultados";
+        return "thymeleaf/resultados";
     }
 
     @ResponseBody
